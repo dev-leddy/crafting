@@ -221,14 +221,22 @@ LevelEnchantment(){
     Loop, %IterationNumber%{
         ;click crafting button
         MouseMove, %EnchantBtnLocationX%, %EnchantBtnLocationY%, 5
+        sleepRandom(200, 600)
+        MouseClick, left, %EnchantBtnLocationX%, %EnchantBtnLocationY%
         sleepRandom(500, 1000)
 
         ;click item to enchant
         MouseMove, %ItemToEnchantLocationX%, %ItemToEnchantLocationY%, 5
+        sleepRandom(200, 600)
+        MouseClick, left, %ItemToEnchantLocationX%, %ItemToEnchantLocationY%
         sleepRandom(500, 1000)
 
         ;click warning
         MouseMove, %EnchantOverwriteBoxX%, %EnchantOverwriteBoxY%, 5
+        sleepRandom(200, 600)
+        MouseClick, left, %EnchantOverwriteBoxX%, %EnchantOverwriteBoxY%
+
+        ;long timer for enchament casting
         sleepRandom(10000, 12000)
     }
 
@@ -310,7 +318,7 @@ ReadSettingsIni(){
     GuiControl,, ItemToEnchantLocationLabel, %ItemToEnchantLocationX% / %ItemToEnchantLocationY%
     GuiControl,, EnchantOverwriteBoxLabel, %EnchantOverwriteBoxX% / %EnchantOverwriteBoxY%
 
-    ;Disenchant Settings
+    ;[Disenchant] Settings
     IniRead, OpenMailX, settings.ini, Disenchanting, OpenMailLocationX
     IniRead, OpenMailY, settings.ini, Disenchanting, OpenMailLocationY
     IniRead, InboxX, settings.ini, Disenchanting, InboxLocationX
@@ -319,6 +327,7 @@ ReadSettingsIni(){
     IniRead, MailGroupsY, settings.ini, Disenchanting, MailGroupsLocationY
     IniRead, MailSelectedGroupX, settings.ini, Disenchanting, MailSelectedGroupLocationX
     IniRead, MailSelectedGroupY, settings.ini, Disenchanting, MailSelectedGroupLocationY
+    
     GuiControl,, OpenMailLocationLabel, %OpenMailX% / %OpenMailY%
     GuiControl,, InboxLocationLabel, %InboxX% / %InboxY%
     GuiControl,, GroupsLocationLabel, %MailGroupsX% / %MailGroupsY%
