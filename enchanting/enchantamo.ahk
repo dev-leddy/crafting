@@ -1,6 +1,6 @@
 SetWorkingDir %A_ScriptDir%
 #Include %A_ScriptDir%\..\libraries\helper_functions.ahk
-
+;test
 #SingleInstance, Force
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
@@ -22,12 +22,13 @@ global MailGroupsX := 0
 global MailGroupsY := 0
 global MailSelectedGroupX := 0
 global MailSelectedGroupY := 0
-
-Gui, Add, Text,,%AppTitle%
+Gui, Font, s14, Segoe UI
+Gui, Add, Text,x6,%AppTitle%
+Gui, Font, s8, Segoe UI
 
 Gui, Add, Text,, Settings for Leveler:
 ;Leveler Buttons
-Gui, Add, Button, w125 h30 gSet_EnchantBtnLocation, Enchant Btn Location
+Gui, Add, Button, w125 h30 x10 gSet_EnchantBtnLocation, Enchant Btn Location
 Gui, Add, Button, w125 h30 x+5 gSet_ItemToEnchantLocation, Item To Enchant Location 
 Gui, Add, Button, w125 h30 x+5 gSet_EnchantOverwriteBox, Enchant Overwrite Box Loc 
 
@@ -37,6 +38,7 @@ Gui, Add, Text, w100 h30 x+25 vItemToEnchantLocationLabel, -
 Gui, Add, Text, w100 h30 x+25 vEnchantOverwriteBoxLabel, -
 
 ;Disenchant Buttons
+Gui, Add, Text, x10, Settings for Disenchanter:
 Gui, Add, Button, w92 h30 x10 gSet_OpenMailLocation, Open Mail Location
 Gui, Add, Button, w90 h30 x+5 gSet_InboxLocation, Inbox Location
 Gui, Add, Button, w90 h30 x+5 gSet_GroupsLocation, Groups Location
@@ -44,17 +46,24 @@ Gui, Add, Button, w95 h30 x+5 gSet_MailSelectedLocation, Mail Selected Groups
 
 ;Disenchant Button Labels
 Gui, Add, Text, x35 w70 h30 vOpenMailLocationLabel, -
-Gui, Add, Text, w65 h30 x+30 vInboxLocationLabel, -
-Gui, Add, Text, w70 h30 x+40 vGroupsLocationLabel, -
-Gui, Add, Text, w70 h30 x+20 vMailSelectedLocationLabel, -
+Gui, Add, Text, w65 h30 x+25 vInboxLocationLabel, -
+Gui, Add, Text, w70 h30 x+30 vGroupsLocationLabel, -
+Gui, Add, Text, w70 h30 x+22 vMailSelectedLocationLabel, -
 
-;Leveler Iterations
-Gui, Add, Text, x10, Iterations:
+;Leveler/DE Iterations
+Gui, Font, s8 cWhite, Segoe UI
+Gui, Add, Text, x10, Iterations/Inv slots:
 Gui, Font, s10 cBlack, Segoe UI
 Gui, Add, Edit, w50 h30 vIterationNumber Number, 65
 
-Gui, Add, Button, x+240 w100 h30 gStartLevelEnchantment, Start Leveler
-Gui, Add, Button, x300 w100 h30 gStartDisenchanter, Disenchant
+;Runtime
+Gui, Font, s8 cWhite, Segoe UI
+Gui, Add, Text, x10, Runtime (hours):
+Gui, Font, s10 cBlack, Segoe UI
+Gui, Add, Edit, w50 h30 vRuntimeNumber Number, 1
+
+Gui, Add, Button, x+240 w100 h30 gStartLevelEnchantment, Leveler
+Gui, Add, Button, x300 w100 h30 gStartDisenchanter, Disenchanter
 
 ;Log Window
 Gui, Font, s10 cWhite, Segoe UI
@@ -65,14 +74,14 @@ Gui, Font, s18 cRed Bold, Verdana
 Gui, Add, Text, w350 h30 vStatus_Text, Stopped
 
 ;Save Settings Button (he special)
-Gui, Font, s10 cWhite w400, Segoe UI
-Gui, Add, Button, w100 h20 x295 y10 gSet_Save, Save Settings
+Gui, Font, s8 cWhite w400, Segoe UI
+Gui, Add, Button, w75 h20 x320 y8 gSet_Save, Save Settings
 
 Gui, Color, Black
 Gui, Show,, %AppTitle%
 
 ReadSettingsIni()
-log("Hello.")
+log("Before running disenchanter, manually disenchant items until you get a common/rare item, or place one of each in your inventory. This will ensure you always have inventory space and won't get stuck dead in the water.")
 return
 
 ;==============
@@ -80,33 +89,37 @@ return
 ;==============
 Set_EnchantBtnLocation:
     EnchantBtnLocationClicked := true
-    ;GuiControl,, Set_ProspLoot_Text, Left click the pixel
+    log("click location")
 Return
 
 Set_ItemToEnchantLocation:
     ItemToEnchantLocationClicked := true
-    ;GuiControl,, Set_ProspLoot_Text, Left click the pixel
+    log("click location")
 Return
 
 Set_EnchantOverwriteBox:
     EnchantOverwriteBoxClicked := true
-    ;GuiControl,, Set_ProspLoot_Text, Left click the pixel
+    log("click location")
 Return
 
 Set_OpenMailLocation:
     OpenMailLocationClicked := true
+    log("click location")    
 Return
 
 Set_InboxLocation:
     InboxLocationClicked := true
+    log("click location")    
 Return
 
 Set_GroupsLocation:
     GroupsLocationClicked := true
+    log("click location")    
 Return
 
 Set_MailSelectedLocation:
     MailSelectedLocationClicked := true
+    log("click location")    
 Return
 
 
@@ -136,6 +149,8 @@ StartLevelEnchantment:
 return
 
 StartDisenchanter:
+    runTimer := new SecondCounter
+    runTimer.Start()
     DisenchantItems()
 return
 
@@ -144,19 +159,22 @@ return
 ;=========================
 #If EnchantBtnLocationClicked = true
     LButton::
-    MouseGetPos, EnchantBtnLocationX, EnchantBtnLocationY    
+    MouseGetPos, EnchantBtnLocationX, EnchantBtnLocationY  
+    log("location set, click 'Save Settings' to apply")  
     EnchantBtnLocationClicked := false
 return
 
 #If ItemToEnchantLocationClicked = true
     LButton::
     MouseGetPos, ItemToEnchantLocationX, ItemToEnchantLocationY
+    log("location set, click 'Save Settings' to apply")
     ItemToEnchantLocationClicked := false
 return
 
 #If EnchantOverwriteBoxClicked = true
     LButton::
     MouseGetPos, EnchantOverwriteBoxX, EnchantOverwriteBoxY
+    log("location set, click 'Save Settings' to apply")
     EnchantOverwriteBoxClicked := false
 return
 
@@ -164,24 +182,28 @@ return
 #If OpenMailLocationClicked = true
     LButton::
     MouseGetPos, OpenMailX, OpenMailY
+    log("location set, click 'Save Settings' to apply")
     OpenMailLocationClicked := false
 return
 
 #If InboxLocationClicked = true
     LButton::
     MouseGetPos, InboxX, InboxY
+    log("location set, click 'Save Settings' to apply")
     InboxLocationClicked := false
 return
 
 #If GroupsLocationClicked = true
     LButton::
     MouseGetPos, MailGroupsX, MailGroupsY
+    log("location set, click 'Save Settings' to apply")
     GroupsLocationClicked := false
 return
 
 #If MailSelectedLocationClicked = true
     LButton::
     MouseGetPos, MailSelectedGroupX, MailSelectedGroupY
+    log("location set, click 'Save Settings' to apply")
     MailSelectedLocationClicked := false
 return
 
@@ -238,10 +260,14 @@ DisenchantItems(){
         sleepRandom(4200, 4800)
     }
 
-    if(true){
+    currentRunTimeInHours := runTimer.Tick() / 3600
+
+    if(currentRunTimeInHours < RuntimeNumber){
         DisenchantItems()
     }
-    else{        
+    else{     
+        runTimer.Stop()   
+        log("Disenchanter stopped")
         GuiControl,, Status_Text, Stopped
         Gui, Font, s18 cRed Bold, Verdana
         GuiControl, Font, Status_Text
