@@ -64,6 +64,8 @@ Gui, Add, Edit, w50 h30 vRuntimeNumber Number, 1
 
 Gui, Add, Button, x+240 w100 h30 gStartLevelEnchantment, Leveler
 Gui, Add, Button, x300 w100 h30 gStartDisenchanter, Disenchanter
+Gui, Font, s8 cWhite, Segoe UI
+Gui, Add, CheckBox, Checked vSendMail, Send Mail
 
 ;Log Window
 Gui, Font, s10 cWhite, Segoe UI
@@ -245,8 +247,12 @@ LevelEnchantment(){
 DisenchantItems(){
     ;get items first!
     GetMail()
-    ;send DE'd stuff!
-    SendMail()
+
+    GuiControlGet, SendMailChecked,, SendMail
+    if(SendMailChecked == 1){
+        ;send DE'd stuff!
+        SendMail()
+    }
 
     GuiControlGet, IterationNumber
     log("Starting disenchantment loop...")
@@ -289,7 +295,7 @@ GetMail(){
     sleepRandom(2000, 2100)
 
     MouseClick, left, %OpenMailX%, %OpenMailY%
-    sleepRandom(55000, 65000)
+    sleepRandom(45000, 55000)
 }
 
 SendMail(){
@@ -302,7 +308,7 @@ SendMail(){
         sleepRandom(650, 900)
     }
 
-    sleepRandom(7000, 8000)s
+    sleepRandom(4000, 5000)
 }
 
 ReadSettingsIni(){
@@ -327,7 +333,7 @@ ReadSettingsIni(){
     IniRead, MailGroupsY, settings.ini, Disenchanting, MailGroupsLocationY
     IniRead, MailSelectedGroupX, settings.ini, Disenchanting, MailSelectedGroupLocationX
     IniRead, MailSelectedGroupY, settings.ini, Disenchanting, MailSelectedGroupLocationY
-    
+
     GuiControl,, OpenMailLocationLabel, %OpenMailX% / %OpenMailY%
     GuiControl,, InboxLocationLabel, %InboxX% / %InboxY%
     GuiControl,, GroupsLocationLabel, %MailGroupsX% / %MailGroupsY%
