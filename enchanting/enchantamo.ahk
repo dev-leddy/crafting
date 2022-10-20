@@ -60,7 +60,7 @@ Gui, Add, Edit, w50 h30 vIterationNumber Number, 30
 
 ;Runtime
 Gui, Font, s8 cWhite, Segoe UI
-Gui, Add, Text, x10, Runtime (hours):
+Gui, Add, Text, x10, Runtime (minutes):
 Gui, Font, s10 cBlack, Segoe UI
 Gui, Add, Edit, w50 h30 vRuntimeNumber Number, 1
 
@@ -287,9 +287,9 @@ DisenchantItems(){
     log("Runtime")
     log(runTimer.Tick())
     log("User Setting")
-    log(RuntimeNumber * 3600)
+    log(RuntimeNumber * 60)
 
-    if(runTimer.Tick() < RuntimeNumber * 3600){
+    if(runTimer.Tick() < RuntimeNumber * 60){
         DisenchantItems()
     }
     else{     
@@ -306,7 +306,7 @@ GetMail(){
     log("Getting Mail...")
 
     GuiControlGet, IterationNumber
-    sleepValue := IterationNumber * 850
+    sleepValue := IterationNumber * 950
 
     ;Open inbox
     MouseClick, left, %InboxX%, %InboxY%
