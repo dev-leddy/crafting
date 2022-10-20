@@ -306,7 +306,7 @@ GetMail(){
     log("Getting Mail...")
 
     GuiControlGet, IterationNumber
-    sleepValue := IterationNumber * 650
+    sleepValue := IterationNumber * 850
 
     ;Open inbox
     MouseClick, left, %InboxX%, %InboxY%
