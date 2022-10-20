@@ -1,6 +1,6 @@
 SetWorkingDir %A_ScriptDir%
 #Include %A_ScriptDir%\..\libraries\helper_functions.ahk
-;test
+
 #SingleInstance, Force
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
@@ -22,6 +22,8 @@ global MailGroupsX := 0
 global MailGroupsY := 0
 global MailSelectedGroupX := 0
 global MailSelectedGroupY := 0
+global runTimer := new SecondCounter
+
 Gui, Font, s14, Segoe UI
 Gui, Add, Text,x6,%AppTitle%
 Gui, Font, s8, Segoe UI
@@ -54,7 +56,7 @@ Gui, Add, Text, w70 h30 x+22 vMailSelectedLocationLabel, -
 Gui, Font, s8 cWhite, Segoe UI
 Gui, Add, Text, x10, Iterations/Inv slots:
 Gui, Font, s10 cBlack, Segoe UI
-Gui, Add, Edit, w50 h30 vIterationNumber Number, 65
+Gui, Add, Edit, w50 h30 vIterationNumber Number, 30
 
 ;Runtime
 Gui, Font, s8 cWhite, Segoe UI
@@ -84,6 +86,7 @@ Gui, Show,, %AppTitle%
 
 ReadSettingsIni()
 log("Before running disenchanter, manually disenchant items until you get a common/rare item, or place one of each in your inventory. This will ensure you always have inventory space and won't get stuck dead in the water.")
+log("Also, make sure you have your mailbox open and settings applied.")
 return
 
 ;==============
@@ -142,6 +145,11 @@ Set_Save:
     IniWrite, %MailSelectedGroupX%, settings.ini, Disenchanting, MailSelectedGroupLocationX
     IniWrite, %MailSelectedGroupY%, settings.ini, Disenchanting, MailSelectedGroupLocationY
 
+    GuiControlGet, IterationNumber
+    GuiControlGet, RuntimeNumber
+    IniWrite, %IterationNumber%, settings.ini, EnchantmentSettings, Inventory
+    IniWrite, %RuntimeNumber%, settings.ini, EnchantmentSettings, Runtime
+
     ReadSettingsIni()
     log("Saving settings...")
 return
@@ -151,8 +159,8 @@ StartLevelEnchantment:
 return
 
 StartDisenchanter:
-    runTimer := new SecondCounter
     runTimer.Start()
+    sleepRandom(2000,3000)
     DisenchantItems()
 return
 
@@ -248,10 +256,10 @@ DisenchantItems(){
     ;get items first!
     GetMail()
 
-    GuiControlGet, SendMailChecked,, SendMail
-    if(SendMailChecked == 1){
-        ;send DE'd stuff!
-        SendMail()
+    ;send DE'd stuff!
+    GuiControlGet, SendMail
+    if(SendMail == 1){
+       SendMail()
     }
 
     GuiControlGet, IterationNumber
@@ -266,17 +274,22 @@ DisenchantItems(){
 
     Loop, %IterationNumber% {
         if(GetKeyState("Numpad9")){
-            log("Terminating disenchant loop")
+            log("STOPPING Disenchanter")
             break
         }
 
         ControlSend,, {F9}, ahk_id %wowid%
-        sleepRandom(4200, 4800)
+        sleepRandom(3850, 4200)
     }
 
-    currentRunTimeInHours := runTimer.Tick() / 3600
+    ;User defined run time
+    GuiControlGet, RuntimeNumber
+    log("Runtime")
+    log(runTimer.Tick())
+    log("User Setting")
+    log(RuntimeNumber * 3600)
 
-    if(currentRunTimeInHours < RuntimeNumber){
+    if(runTimer.Tick() < RuntimeNumber * 3600){
         DisenchantItems()
     }
     else{     
@@ -291,11 +304,17 @@ DisenchantItems(){
 
 GetMail(){
     log("Getting Mail...")
+
+    GuiControlGet, IterationNumber
+    sleepValue := IterationNumber * 650
+
+    ;Open inbox
     MouseClick, left, %InboxX%, %InboxY%
     sleepRandom(2000, 2100)
 
+    ;Open mail
     MouseClick, left, %OpenMailX%, %OpenMailY%
-    sleepRandom(45000, 55000)
+    sleepRandom(sleepValue, sleepValue)
 }
 
 SendMail(){
@@ -303,12 +322,12 @@ SendMail(){
     MouseClick, left, %MailGroupsX%, %MailGroupsY%
     sleepRandom(2000, 2100)
 
-    Loop, 3{
+    Loop, 2{
         MouseClick, left, %MailSelectedGroupX%, %MailSelectedGroupY%
-        sleepRandom(650, 900)
+        sleepRandom(1000, 2000)
     }
 
-    sleepRandom(4000, 5000)
+    sleepRandom(2000, 3000)
 }
 
 ReadSettingsIni(){
@@ -324,7 +343,7 @@ ReadSettingsIni(){
     GuiControl,, ItemToEnchantLocationLabel, %ItemToEnchantLocationX% / %ItemToEnchantLocationY%
     GuiControl,, EnchantOverwriteBoxLabel, %EnchantOverwriteBoxX% / %EnchantOverwriteBoxY%
 
-    ;[Disenchant] Settings
+    ;[Disenchanting] Settings
     IniRead, OpenMailX, settings.ini, Disenchanting, OpenMailLocationX
     IniRead, OpenMailY, settings.ini, Disenchanting, OpenMailLocationY
     IniRead, InboxX, settings.ini, Disenchanting, InboxLocationX
@@ -338,6 +357,12 @@ ReadSettingsIni(){
     GuiControl,, InboxLocationLabel, %InboxX% / %InboxY%
     GuiControl,, GroupsLocationLabel, %MailGroupsX% / %MailGroupsY%
     GuiControl,, MailSelectedLocationLabel, %MailSelectedGroupX% / %MailSelectedGroupY%
+
+    ;[EnchantmentSettings] 
+    IniRead, IterationNumberSaved, settings.ini, EnchantmentSettings, Inventory
+    IniRead, RuntimeNumberSaved, settings.ini, EnchantmentSettings, Runtime
+    GuiControl,, IterationNumber, %IterationNumberSaved%
+    GuiControl,, RuntimeNumber, %RuntimeNumberSaved%
 }
 
 GuiClose:
