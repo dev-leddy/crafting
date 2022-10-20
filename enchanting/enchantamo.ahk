@@ -160,7 +160,7 @@ return
 
 StartDisenchanter:
     runTimer.Start()
-    sleepRandom(2000,3000)
+    sleepRandom(1000,2000)
     DisenchantItems()
 return
 
@@ -284,10 +284,8 @@ DisenchantItems(){
 
     ;User defined run time
     GuiControlGet, RuntimeNumber
-    log("Runtime")
-    log(runTimer.Tick())
-    log("User Setting")
-    log(RuntimeNumber * 60)
+    timerTotal := RuntimeNumber * 60
+    log("Stopping in " Ceil((timerTotal - runTimer.Tick())/60) " minutes.")
 
     if(runTimer.Tick() < RuntimeNumber * 60){
         DisenchantItems()
