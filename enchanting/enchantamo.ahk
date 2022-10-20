@@ -279,7 +279,7 @@ DisenchantItems(){
         }
 
         ControlSend,, {F9}, ahk_id %wowid%
-        sleepRandom(3850, 4200)
+        sleepRandom(4300, 4500)
     }
 
     ;User defined run time
