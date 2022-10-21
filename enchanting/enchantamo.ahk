@@ -322,10 +322,10 @@ SendMail(){
 
     Loop, 2{
         MouseClick, left, %MailSelectedGroupX%, %MailSelectedGroupY%
-        sleepRandom(1000, 2000)
+        sleepRandom(1500, 2500)
     }
 
-    sleepRandom(2000, 3000)
+    sleepRandom(4000, 5000)
 }
 
 ReadSettingsIni(){
